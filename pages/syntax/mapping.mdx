@@ -1,0 +1,109 @@
+# 关于 Mappings
+
+Solidity 中 Mappings 的概念类似于 java 中的 hashmap 或者 python 中的 dictionnary。它们使用都起来有一点像 hash 表,
+
+尽管它们在以下方面略有不同:
+
+在 solidity 中所有可能的变量都以默认值初始化。
+
+正因为如此， mappings 是没有长度的。没有设置一个 key 或者 value 的概念。关键数据不是储存在一个 mapping 中的，相反的它的 keccak256 hash 值用来存储关键数据指向的 value 值。
+
+# 如何来定义一个 Mapping?
+
+```solidity
+mapping (_KeyType => _ValueType) mappingName;
+```
+
+一个好建议：在 mapping 变量名之前使用 public 关键字。这将会自动为 mapping 创建一个 getter 方法。你只需要通过传入**\_KeyType**参数给 getter 就能返回**\_ValueType.**
+
+```solidity
+mapping (_KeyType => _ValueType) public mappingName;
+```
+
+# 如何使用一个 mapping?
+
+- 对关联关系非常有用,就像将一个 eth 的地址和一个 uint 的整数关联起来 mapping(address => \_valueType) my_mapping
+- `mapping(uint => _valueType) my_mapping`
+
+举个例子在游戏中我们把玩家的地址和玩家的等级关联起来
+
+```solidity
+mapping(address => uint) public userLevel;
+```
+
+另一个例子列出地址是否能够发送 eth?
+
+```solidity
+mapping(address => bool) allowedToSend;
+```
+
+另外一个例子 mapping 的 value 值是一个 struct 类型。
+
+```solidity
+struct someStruct {}
+
+mapping(uint => someStruct) canDoSomething;
+
+uint canDoSomethingKey = 0;
+
+function addCanDoSomething() {
+     canDoSomething[canDoSomethingKey] = someStruct(arg1, arg2, ...);
+     canDoSomethingKey++;
+}
+```
+
+# 如何从 Mapping 中获得 value 值?
+
+```solidity
+function currentLevel(address userAddress) public view returns (uint) {
+     return userLevel[userAddress];
+}
+```
+
+# 使用 Mapping 作为另一个 Mapping 的 value 值
+
+```solidity
+contract C {
+    struct S { uint a; uint b; }
+    uint x;
+    mapping(uint => mapping(uint => S)) data;
+}
+```
+
+# 循环一个 mapping?
+
+因为开头所说的原因不能直接去循环一个 mapping 变量。
+
+> mappings are virtually initialised such that every possible key exists and is mapped to a value
+
+然而可以实现一个基于 mapping 之上的数据结构，来使得 mapping 可以被循环。
+
+可以记录一个 counter 的计数器，来告诉你 mapping 的长度当有新增的 value 值的时候。
+
+# Mappings 作为函数的参数
+
+这是一个比较难得主题,但是我们还是尝试去探讨一下。Mappings 可以作为参数传到函数中，但是它们必须满足下面的 2 个要求：
+
+1.  Mappings 只能作为内部和私有函数的参数
+1.  Mappings 作为参数传递时，数据的存储位置只能是 storage
+
+# 你不能使用 Mappings 的地方
+
+- 不能直接循环 mapping 类型
+- Mappings 在 solidity 中参数不能作为参数传递到公有函数和外部函数
+- Mappings 不能作为函数的返回值
+
+|           Variable Type            | Key Type | Value Type |
+| :--------------------------------: | :------: | :--------: |
+|            `int / uint`            |    ✔️    |     ✔️     |
+|              `string`              |    ✔️    |     ✔️     |
+|           `byte / bytes`           |    ✔️    |     ✔️     |
+|             `address`              |    ✔️    |     ✔️     |
+|              `struct`              |    ❌    |     ✔️     |
+|             `mapping`              |    ❌    |     ✔️     |
+|               `enum`               |    ❌    |     ✔️     |
+|             `contract`             |    ❌    |     ✔️     |
+|    \* fixed-sized array `T[k]`     |    ✔️    |     ✔️     |
+|    \* dynamic-sized array `T[]`    |    ❌    |     ✔️     |
+| \* multi-dimentional array `T[][]` |    ❌    |     ✔️     |
+|             `variable`             |    ❌    |     ❌     |
