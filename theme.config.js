@@ -1,12 +1,11 @@
 export default {
-  github: 'https://github.com/shuding/nextra',
-  docsRepositoryBase: 'https://github.com/shuding/nextra/blob/master',
-  titleSuffix: ' – Nextra',
+  github: 'https://github.com/coffiasd/solidity-learn',
+  docsRepositoryBase: 'hhttps://github.com/coffiasd/solidity-learn',
+  titleSuffix: 'Solidity从入门到跑路',
   logo: (
     <>
-      <span className="mr-2 font-extrabold hidden md:inline">Nextra</span>
+      <span className="mr-2 font-extrabold hidden md:inline">Solidity从入门到跑路</span>
       <span className="text-gray-600 font-normal hidden md:inline">
-        The Next.js Static Site Generator
       </span>
     </>
   ),
@@ -62,6 +61,6 @@ export default {
   nextLinks: true,
   footer: true,
   footerEditLink: 'Edit this page on GitHub',
-  footerText: <>MIT {new Date().getFullYear()} © Nextra.</>,
+  footerText: <>MIT {new Date().getFullYear()}, 打赏: 0xE2bCb3e6e03B477DA0698e1b4ECf570D06B34Ce7 </>,
   unstable_faviconGlyph: '👋',
 }

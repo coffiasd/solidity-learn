@@ -1,7 +1,9 @@
 {
-  "index": "Introduction",
-  "get-started": "Get Started",
-  "features": "Features",
-  "themes": "Themes",
-  "advanced": "Advanced"
+  "index": "介绍",
+  "get-started": "开始",
+  "syntax": "语法",
+  "unit-test": "单元测试",
+  "applications": "应用",
+  "defi": "defi",
+  "hacks": "hacks"
 }
