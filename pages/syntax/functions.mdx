@@ -1,0 +1,37 @@
+# solidity 之函数篇
+
+## 函数可见性(Function Visibility)
+
+Solidity 中主要有 4 种可见性的关键字
+
+- Public:公有函数
+- Private:私有函数,只有定义该函数的合约本生能够调用，衍生合约或者外部无法调用
+- Internal:内部函数，只有定义该函数的合约本生和衍生合约能够调用。
+- External:外部函数，只有外部合约或者地址能够调用。合约则无法调用。
+
+其中需要特别注意的是只有 public 和 external 函数可以加上 payable 特性,而 internal 和 private 函数就不行。
+
+## View vs Pure ?
+
+函数也能够接受不同的关键词。solidity 的编译器中也提到了这些信息。下面是关于这 2 个关键词的介绍。
+
+- View : view 函数可以读取合约中存储的信息，但是不能够改变合约存储的信息。所以它们是理想的 getters。view 函数在执行的时候不需要消耗 gas。但是，有一些需要注意的事项。如果 view 函数在外部调用，它是不需要消耗任何的 gas 的。如果 view 函数被合约内部调用的另一个非 view 函数中调用，它还是会消耗一些 gas。那是因为别的函数在链上创建了交易，这项交易需要被网络上的其它节点进行验证。
+
+- Pure : pure 函数既不能读取也不能修改合约中存储的信息。大部分情况下，pure 函数用作计算，就像执行数学或者密码学操作的时候。
+
+## payable function
+
+当 payable 关键词加到函数上的时候，这个函数可以发送也可以接收 Ethers。但是如果像一个没有 payable 关键词的函数发送 Ethers 的时候，这个函数会自动拒绝发送的 Ethers。
+
+## Fallback funtion
+
+在 solidity 中 fallback 函数的创建主要有 2 个目的：
+
+- 货币管理：以一种更有意义的方式进行货币的接收和分配。
+- 错误处理：如果一个用户调用了合约中根本不存在的函数？所以 fallback 函数能够以更加优雅的方式处理这种情况。
+
+一个默认的 fallback 函数可以以下面的方式进行定义。这里的 pubic 和 payable 关键词表示合约可以接收 ether。
+
+```solidity
+function() public payable {}
+```

@@ -1,0 +1,154 @@
+# 用 next.js+wagmi+rainbowkit 搭建 web3 钱包交互组件
+
+## 1.概览
+
+在 web3 开发的项目中几乎都需要和钱包进行交互。钱包替代了 web2 中的后端数据库。如何搭建一个美丽的钱包交互界面？直接先上效果图。
+
+![alt 1.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d706fed717c145a488faf514474bd88a~tplv-k3u1fbpfcp-watermark.image?)
+![alt 2.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/53752c873705457ea2642df04473b954~tplv-k3u1fbpfcp-watermark.image?)
+![alt 3.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ad85ba1baacd44f3aae9028bcd06204a~tplv-k3u1fbpfcp-watermark.image?)
+
+## 2.使用到的技术栈
+
+- next.js
+- wagmi(react hooks)
+- ranbowkit(UI 库)
+- tailwindcss(css 框架)
+- daisyUI(UI 库)
+
+## 3.next.js 的脚手架搭建
+
+next.js 号称是一个用于生产环境的 React 框架。如果你没有 react.js 的基础最好先大概了解下 react.js。next.js 在 react 的基础上增加了 ssg 和 ssr 的混合渲染、减少了配置成本、增加了增量静态生成等一系列的特性。
+
+### 3.1 初始化 next.js 项目
+
+```js
+npx create-next-app@latest --typescript
+# or
+yarn create next-app --typescript
+```
+
+### 3.2 添加 tailwindcss 库
+
+tailwindcss 是一个 css 框架可以大量减少 css 的代码量。如果你不需要、或者想手撸 css、或者用 bootstrap 当然可以选择跳过这步。
+
+```js
+npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
+```
+
+我们还需要在 next.js pages/\_app.js 中添加基础的 css 包
+
+```js
+- import '../styles/globals.css'
++ import 'tailwindcss/tailwind.css'
+
+function MyApp({ Component, pageProps }) {
+return <Component {...pageProps} />
+}
+
+export default MyApp
+```
+
+另外还加了 daisyUI
+
+```js
+npm i --save daisyui
+```
+
+装完之后需要略微修改下根目录下的 tailwindcss 配置文件即可
+
+```javascript
+module.exports = {
+  purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+  content: [],
+  theme: {
+    extend: {},
+  },
+  plugins: [require('daisyui')], //这是我们添加的内容.
+}
+```
+
+## 4.rainbowkit 配置
+
+在我们的 pages/\_app.js 中添加 rainbowkit 内容。
+
+```js
+import {
+  WagmiConfig,
+  createClient,
+  configureChains,
+  defaultChains,
+} from 'wagmi'
+import { publicProvider } from 'wagmi/providers/public'
+//rainbow kit UI framework.
+import '@rainbow-me/rainbowkit/styles.css'
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+
+const { chains, provider } = configureChains(defaultChains, [publicProvider()])
+
+const { connectors } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  chains,
+})
+
+const client = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+})
+```
+
+这里首先初始化一个 client 对象。这个 client 对象有一些可选参数。
+
+- autoConnect
+- connectors
+- providers
+- storage
+- webSocetProvider
+
+具体解释可以参考下官方文档:[`https://wagmi.sh`](https://wagmi.sh)
+
+初始化之后我们就可以直接把 client 和 chains 传进去。
+
+```js
+function MyApp({ Component, pageProps }) {
+  return (
+    <WagmiConfig client={client}>
+      <RainbowKitProvider chains={chains}>
+        <Component {...pageProps} />
+      </RainbowKitProvider>
+    </WagmiConfig>
+  )
+}
+```
+
+基本的配置就完成了接下来在我们需要使用到的地方直接调用就行了。比如在我的 header 组件中的 connect button。
+
+```js
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
+
+const { openConnectModal } = useConnectModal()
+const { openAccountModal } = useAccountModal()
+const { openChainModal } = useChainModal()
+```
+
+定义完成这个打开 modal 层的按钮之后只需要在我们的按钮上增加 click 事件就可以完成触发。
+
+```html
+{isConnected ?
+    (<><button class="btn btn-sm btn-outline btn-primary ml-3 normal-case" onClick={openAccountModal}>Profile</button><button class="btn btn-sm btn-outline btn-primary ml-3 normal-case" onClick={openChainModal}>Chain</button></>)
+    :
+    (<button class="btn btn-sm btn-outline btn-primary ml-3 normal-case" onClick={openConnectModal}>connect wallet</button>)
+}
+```
+
+## 5.完整的代码
+
+[`https://github.com/coffiasd/demo-wagmi-rainbowkit`](https://github.com/coffiasd/demo-wagmi-rainbowkit)
+
+[`https://demo-wagmi-rainbowkit.vercel.app`](https://demo-wagmi-rainbowkit.vercel.app)

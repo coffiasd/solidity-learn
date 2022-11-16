@@ -1,0 +1,108 @@
+# Solidity 中的数据存储位置
+
+你会发现这块内容是最具有挑战性的。下面的表格会是每块数据存储位置的概览，标识了读写的权限。具体每个数据存储位置的详情，可以阅读对应的具体模块。
+
+## 数据读写权限
+
+我们什么时候使用关键字, storage、memory、calldata ?
+
+任何具有复杂类型的变量比如 array,struct,mappings 或者 enum 必须指定一个数据存储位置。
+
+# Storage
+
+Storage 对应合约内的存储。
+
+你可以把你不想被 cloned 的变量作为 Storage 存储。
+
+Storage 是长期有效的，但是成本比较高。
+
+# Memory
+
+在 ETH 中 memory 保存了临时变量，就像函数的参数。
+
+而且,memory 变量在外部函数调用时会被清除。
+
+Memory 是短暂且便宜的
+
+# Calldata
+
+calldata 和 memory 的使用场景比较像,但是 calldata 初始化之后不能再修改值。
+
+# Stack
+
+stack 存储了小的局部变量。然而它只能存储数量有限的变量。stack 在 eth 中只能有最大 1024 个元素。
+
+一旦函数执行完成就结束。
+
+# 函数参数的数据存储位置规则
+
+下面的表格展示了函数参数可选的数据类型，取决于函数的可见性。
+
+外部函数或者公有函数不能访问 storage
+
+# 函数内部的数据存储位置
+
+在函数内部所有的三种数据存储位置都能被指定，不管函数的可见性。然后在在赋值的时候存在一些具体的规则，如下面表格中展示：
+
+**Storage**
+
+| storage references can be assigned a: |     |
+| ------------------------------------- | --- |
+| state variable directly               | ✅  |
+| state variable via storage reference  | ✅  |
+| memory reference                      | ❌  |
+| calldata value directly               | ❌  |
+| calldata value via calldata reference | ❌  |
+
+**Memory**
+
+| memory references can be assigned a:  |     |
+| ------------------------------------- | --- |
+| state variable directly               | ✅  |
+| state variable via storage reference  | ✅  |
+| memoryreference                       | ✅  |
+| calldata value directly               | ✅  |
+| calldata value via calldata reference | ✅  |
+
+**Calldata**
+
+| calldata references can be assigned a: |     |
+| -------------------------------------- | --- |
+| state variable directly                | ❌  |
+| state variable via storagereference    | ❌  |
+| memoryreference                        | ❌  |
+| calldata value directly                | ✅  |
+| calldata value via calldatareference   | ✅  |
+
+# 数据存储位置-行为
+
+当我们指定数据存储位置的时候，有 2 件主要的事情需要考虑：影响范围和 gas 的使用量。
+
+让我们用一个简单的合约来更好的了解这个区别。为什么比较不用的存储位置，我们使用了不同的函数使用不同的数据类型关键词。
+
+- a getter storage
+- a getter memory
+- a setter storage
+- a setter memory
+
+```solidity
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.0;
+
+contract Garage {
+    struct Item {
+        uint256 units;
+    }
+    mapping(uint256 => Item) items;
+
+    function getItemUnitsStorage(uint _itemIndex) public view returns(uint) {
+        Item storage item = items[_itemIndex];
+        return item.units;
+    }
+
+    function getItemUnitsMemory(uint _itemIndex) public view returns (uint) {
+        Item memory item = items[_itemIndex];
+        return item.units;
+    }
+}
+```

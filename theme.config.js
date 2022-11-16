@@ -1,7 +1,7 @@
 export default {
   github: 'https://github.com/coffiasd/solidity-learn',
   docsRepositoryBase: 'hhttps://github.com/coffiasd/solidity-learn',
-  titleSuffix: 'Solidity从入门到跑路',
+  titleSuffix: 'Solidity入门教程',
   logo: (
     <>
       <span className="mr-2 font-extrabold hidden md:inline">Solidity从入门到跑路</span>
@@ -61,6 +61,6 @@ export default {
   nextLinks: true,
   footer: true,
   footerEditLink: 'Edit this page on GitHub',
-  footerText: <>MIT {new Date().getFullYear()}, 打赏: 0xE2bCb3e6e03B477DA0698e1b4ECf570D06B34Ce7 </>,
+  footerText: <>MIT {new Date().getFullYear()}, 打赏: 0xe2bcb3e6e03b477da0698e1b4ecf570d06b34ce7 </>,
   unstable_faviconGlyph: '👋',
 }

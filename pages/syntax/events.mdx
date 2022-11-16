@@ -1,0 +1,67 @@
+# Solidity 之事件(events)篇
+
+Solidity 的事件(events)是在 EVM(虚拟机) 上的 logging 功能的抽象化实现。应用可以订阅并且监听客户端的 RPC 调用。
+事件和日志对 ETH 来说非常的重要,因为它们可以增加智能合约和用户之间的交互。事件方便了 EVM 上 logging 功能的使用。
+事件上的参数被存储到交易的日志中，这是 ETH 链上的一种特殊的数据格式。
+
+## 在 solidity 中的事件是什么?
+
+在传统的 web 开发当中，服务端的返回通过回调的方式下发给前端。在 ETH 中，当一笔交易被提交之后，智能合约可以触发事件并且在链上记录日志，之后前端就可以基础处理后面的内容了。
+
+## 怎么样来使用事件？
+
+事件有 3 中主要的使用场景
+
+- 智能合约给用户的返回值
+- 异常触发
+- 更便宜的数据存储
+
+## 在 solidity 中如何定义事件？
+
+- 事件在函数外部定义
+- 事件名必须和函数名称有所区分
+- 事件名称必须是大写
+- 为了减少混淆事件名称至少得 2 个字母和函数名称不一样
+
+## 如何来使用事件
+
+在函数内部通过 emit 关键词，后面跟上事件的名称和事件所需的参数(如果有的话)。
+
+## 事件被存储到什么地方
+
+在 ETH 链上，每笔交易都附上了收据，收据上又包含了 0 条或者多条的日志。日志内容展现了智能合约中触发的事件的结果。
+所以正因为事件存储到日志条目中，所以它们改变了状态。
+
+## 匿名事件
+
+在 solidity 中事件可以是匿名的。默认情况下所有的事件都会有一个主题,来自定义时候的函数名称。使用 anonymous 来记录一个没有主题的事件。匿名事件也会成为 ABI 的一部分。
+
+```solidity
+event Message(
+    address _recipient,
+    string _message
+) anonymous;
+```
+
+匿名事件的使用成本更低。但是匿名事件不能通过名称去筛选，只能通过合约地址。
+
+## demo
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+contract Event {
+    // Event declaration
+    // Up to 3 parameters can be indexed.
+    // Indexed parameters helps you filter the logs by the indexed parameter
+    event Log(address indexed sender, string message);
+    event AnotherLog();
+
+    function test() public {
+        emit Log(msg.sender, "Hello World!");
+        emit Log(msg.sender, "Hello EVM!");
+        emit AnotherLog();
+    }
+}
+```

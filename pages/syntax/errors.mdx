@@ -1,0 +1,25 @@
+# Solidity 教程 : 错误处理篇
+
+## assert()
+
+```solidity
+assert(bool condition);
+```
+
+assert()函数会抛出以异常操作码和一个错误状态。通常情况下用在内部错误处理上。
+
+## require()
+
+```solidity
+require(bool condition, string memory message);
+```
+
+require()在条件不成立的时候，会抛出一个异常状态。通常情况下用来检测外部的输入内容。
+
+## revert()
+
+```solidity
+revert(string memory reason);
+```
+
+revert()会放弃当前的执行并且抛出异常状态。就像 require()，它也是用来检测外部的输入内容。
