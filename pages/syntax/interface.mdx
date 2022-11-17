@@ -1,0 +1,109 @@
+# Interface
+
+## 什么是 interface ?
+
+Interfaces 和抽象合约比较类似,但是他们不能实现任何功能。通过定义好的 interface 我们可以在不清楚目标合约具体实现方式的情况下,调用目标的合约
+
+## 如何定义 interface ?
+
+```solidity
+interface Country {
+    // 定义接口中的方法和返回值
+}
+```
+
+## interface 中不能做什么 ?
+
+- 接口中不能定义 state 变量(包括 constants)
+- 不能继承
+- 不能有构造函数(constructor)
+- 不能实例化一个 interface
+- 不能实现接口中的方法
+- 接口中的方法不能定义为私有或者内部方法,所有的方法必须定义为外部方法(external)
+
+## 举个例子
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title Counter
+ * @notice 目标合约
+ */
+contract Counter {
+    uint public count;
+
+    // count值递增
+    function increment() external {
+        count += 1;
+    }
+}
+
+/**
+ * @title ICounter
+ * @notice 接口
+ */
+interface ICounter {
+    function count() external view returns (uint);
+
+    function increment() external;
+}
+
+/**
+ * @title MyContract
+ * @notice 所在接口
+ */
+contract MyContract {
+    function incrementCounter(address _counter) external {
+        ICounter(_counter).increment();
+    }
+
+    function getCount(address _counter) external view returns (uint) {
+        return ICounter(_counter).count();
+    }
+}
+```
+
+## 测试用例
+
+这里我们使用了 hardhat test 工具来测试接口的返回值
+
+```javascript
+//导出依赖库
+const { expect } = require('chai')
+const { ethers } = require('hardhat')
+
+describe('MyTest', function () {
+  it('should be able to increase count', async function () {
+    //获得上面的2个合约
+    const Counter = await ethers.getContractFactory('Counter')
+    const MyContract = await ethers.getContractFactory('MyContract')
+
+    //部署合约
+    const counter = await Counter.deploy()
+    const mycontract = await MyContract.deploy()
+
+    //通过第二个合约接口调用counter合约,对counter的值进行递增操作
+    await mycontract.incrementCounter(counter.address)
+    await mycontract.incrementCounter(counter.address)
+    await mycontract.incrementCounter(counter.address)
+
+    //获得最终的counter的值
+    const countResult = await mycontract.getCount(counter.address)
+
+    //判断counter的值是否 == bigNumber('3')
+    expect(countResult).to.eql(ethers.BigNumber.from('3'))
+  })
+})
+```
+
+最终的输出值符合预期
+
+```shell
+  MyTest
+    ✔ should be able to increase count (1460ms)
+
+
+  1 passing (1s)
+```

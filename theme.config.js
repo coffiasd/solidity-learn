@@ -1,7 +1,7 @@
 export default {
   github: 'https://github.com/coffiasd/solidity-learn',
   docsRepositoryBase: 'hhttps://github.com/coffiasd/solidity-learn',
-  titleSuffix: 'Solidity入门教程',
+  titleSuffix: '-Solidity入门教程',
   logo: (
     <>
       <span className="mr-2 font-extrabold hidden md:inline">Solidity从入门到跑路</span>

@@ -2,7 +2,17 @@
 
 主要记录分享在学习 solidity 过程中领悟到的一点点心得，希望对看到的人有所帮助。
 
-## 概要
+## Install
+
+```shell
+npm install
+```
+
+```shell
+npm run dev
+```
+
+## Overview
 
 主要内容(待添加)
 
@@ -18,7 +28,7 @@
 
 # Reference
 
-[在线文档](solidity-learn.vercel.app)
+- [在线文档](solidity-learn.vercel.app)
 
 ## License
 
